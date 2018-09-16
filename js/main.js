@@ -1,6 +1,6 @@
 import Player from './player/index'
 import Enemy from './npc/enemy'
-import BackGround from './runtime/background'
+import BackGround from './runtime/background/index.js'
 import GameInfo from './runtime/gameinfo'
 import Music from './runtime/music'
 import DataBus from './databus'
@@ -28,16 +28,15 @@ export default class Main {
     )
 
     this.bg = new BackGround(ctx)
-    this.player = new Player(ctx)
-    this.gameinfo = new GameInfo()
-    this.music = new Music()
+    // this.player = new Player(ctx)
+    // this.gameinfo = new GameInfo()
+    // this.music = new Music()
 
     this.bindLoop = this.loop.bind(this)
-    this.hasEventBind = false
+    // this.hasEventBind = false
 
     // 清除上一局的动画
     window.cancelAnimationFrame(this.aniId);
-
     this.aniId = window.requestAnimationFrame(
       this.bindLoop,
       canvas
@@ -58,33 +57,7 @@ export default class Main {
 
   // 全局碰撞检测
   collisionDetection() {
-    let that = this
-
-    databus.bullets.forEach((bullet) => {
-      for (let i = 0, il = databus.enemys.length; i < il; i++) {
-        let enemy = databus.enemys[i]
-
-        if (!enemy.isPlaying && enemy.isCollideWith(bullet)) {
-          enemy.playAnimation()
-          that.music.playExplosion()
-
-          bullet.visible = false
-          databus.score += 1
-
-          break
-        }
-      }
-    })
-
-    for (let i = 0, il = databus.enemys.length; i < il; i++) {
-      let enemy = databus.enemys[i]
-
-      if (this.player.isCollideWith(enemy)) {
-        databus.gameOver = true
-
-        break
-      }
-    }
+    
   }
 
   // 游戏结束后的触摸事件处理逻辑
@@ -109,58 +82,12 @@ export default class Main {
    */
   render() {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
-
     this.bg.render(ctx)
-
-    databus.bullets
-      .concat(databus.enemys)
-      .forEach((item) => {
-        item.drawToCanvas(ctx)
-      })
-
-    this.player.drawToCanvas(ctx)
-
-    databus.animations.forEach((ani) => {
-      if (ani.isPlaying) {
-        ani.aniRender(ctx)
-      }
-    })
-
-    this.gameinfo.renderGameScore(ctx, databus.score)
-
-    // 游戏结束停止帧循环
-    if (databus.gameOver) {
-      this.gameinfo.renderGameOver(ctx, databus.score)
-
-      if (!this.hasEventBind) {
-        this.hasEventBind = true
-        this.touchHandler = this.touchEventHandler.bind(this)
-        canvas.addEventListener('touchstart', this.touchHandler)
-      }
-    }
   }
 
   // 游戏逻辑更新主函数
   update() {
-    if (databus.gameOver)
-      return;
-
     this.bg.update()
-
-    databus.bullets
-      .concat(databus.enemys)
-      .forEach((item) => {
-        item.update()
-      })
-
-    this.enemyGenerate()
-
-    this.collisionDetection()
-
-    if (databus.frame % 20 === 0) {
-      this.player.shoot()
-      this.music.playShoot()
-    }
   }
 
   // 实现游戏帧循环
