@@ -5,6 +5,8 @@ import GameInfo from './runtime/gameinfo'
 import Music from './runtime/music'
 import DataBus from './databus'
 
+const screenHeight = window.innerHeight
+
 let ctx = canvas.getContext('2d')
 let databus = new DataBus()
 
@@ -28,7 +30,7 @@ export default class Main {
     )
 
     this.bg = new BackGround(ctx)
-    // this.player = new Player(ctx)
+    this.player = new Player(ctx)
     // this.gameinfo = new GameInfo()
     // this.music = new Music()
 
@@ -57,7 +59,6 @@ export default class Main {
 
   // 全局碰撞检测
   collisionDetection() {
-    
   }
 
   // 游戏结束后的触摸事件处理逻辑
@@ -83,11 +84,14 @@ export default class Main {
   render() {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     this.bg.render(ctx)
+    this.player.render(ctx)
   }
 
   // 游戏逻辑更新主函数
   update() {
+    if (databus.gameOver) return
     this.bg.update()
+    this.player.update()
   }
 
   // 实现游戏帧循环

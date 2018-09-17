@@ -1,73 +1,39 @@
 import Sprite   from '../base/sprite'
-import Bullet   from './bullet'
-import DataBus  from '../databus'
+import DataBus from '../databus'
+
+let databus = new DataBus()
 
 const screenWidth    = window.innerWidth
 const screenHeight   = window.innerHeight
 
 // 玩家相关常量设置
-const PLAYER_IMG_SRC = 'images/hero.png'
-const PLAYER_WIDTH   = 80
-const PLAYER_HEIGHT  = 80
+const middleBird = {
+  src: 'images/bird_middle.png',
+  width: 37,
+  height: 26
+}
+const BIRDS_LIST = ['images/bird_middle.png', 'images/bird_up.png', 'images/bird_down.png', 'images/bird_middle.png'];
 
-let databus = new DataBus()
+const BIRD_WIDTH = 37;
+const BIRD_HEIGHT = 26;
+
+// 翅膀煽动间隔毫秒数
+const TIME_SPACE = 80;
+
+// 速度变量
+const speedMax = 8;
 
 export default class Player extends Sprite {
   constructor() {
-    super(PLAYER_IMG_SRC, PLAYER_WIDTH, PLAYER_HEIGHT)
-
-    // 玩家默认处于屏幕底部居中位置
-    this.x = screenWidth / 2 - this.width / 2
-    this.y = screenHeight - this.height - 30
-
-    // 用于在手指移动的时候标识手指是否已经在飞机上了
-    this.touched = false
-
-    this.bullets = []
-
+    super(BIRDS_LIST[0], BIRD_WIDTH, BIRD_HEIGHT)
+    this.speed = 0;
+    this.index = 0;
+    this.lastTime = Date.now();
+    // 玩家默认处于屏幕垂直居中位置
+    this.x = 50;
+    this.y = (screenHeight - this.height)/2
     // 初始化事件监听
     this.initEvent()
-  }
-
-  /**
-   * 当手指触摸屏幕的时候
-   * 判断手指是否在飞机上
-   * @param {Number} x: 手指的X轴坐标
-   * @param {Number} y: 手指的Y轴坐标
-   * @return {Boolean}: 用于标识手指是否在飞机上的布尔值
-   */
-  checkIsFingerOnAir(x, y) {
-    const deviation = 30
-
-    return !!(   x >= this.x - deviation
-              && y >= this.y - deviation
-              && x <= this.x + this.width + deviation
-              && y <= this.y + this.height + deviation  )
-  }
-
-  /**
-   * 根据手指的位置设置飞机的位置
-   * 保证手指处于飞机中间
-   * 同时限定飞机的活动范围限制在屏幕中
-   */
-  setAirPosAcrossFingerPosZ(x, y) {
-    let disX = x - this.width / 2
-    let disY = y - this.height / 2
-
-    if ( disX < 0 )
-      disX = 0
-
-    else if ( disX > screenWidth - this.width )
-      disX = screenWidth - this.width
-
-    if ( disY <= 0 )
-      disY = 0
-
-    else if ( disY > screenHeight - this.height )
-      disY = screenHeight - this.height
-
-    this.x = disX
-    this.y = disY
   }
 
   /**
@@ -75,52 +41,57 @@ export default class Player extends Sprite {
    * 改变战机的位置
    */
   initEvent() {
-    canvas.addEventListener('touchstart', ((e) => {
-      e.preventDefault()
-
-      let x = e.touches[0].clientX
-      let y = e.touches[0].clientY
-
-      //
-      if ( this.checkIsFingerOnAir(x, y) ) {
-        this.touched = true
-
-        this.setAirPosAcrossFingerPosZ(x, y)
-      }
-
-    }).bind(this))
-
-    canvas.addEventListener('touchmove', ((e) => {
-      e.preventDefault()
-
-      let x = e.touches[0].clientX
-      let y = e.touches[0].clientY
-
-      if ( this.touched )
-        this.setAirPosAcrossFingerPosZ(x, y)
-
-    }).bind(this))
-
     canvas.addEventListener('touchend', ((e) => {
       e.preventDefault()
-
-      this.touched = false
+      this.up();
     }).bind(this))
   }
 
-  /**
-   * 玩家射击操作
-   * 射击时机由外部决定
-   */
-  shoot() {
-    let bullet = databus.pool.getItemByClass('bullet', Bullet)
+/**
+ * 煽动翅膀
+ */
+  fly() {
+    if (Date.now() - this.lastTime < TIME_SPACE) return;
 
-    bullet.init(
-      this.x + this.width / 2 - bullet.width / 2,
-      this.y - 10,
-      10
-    )
+    const index = this.index % BIRDS_LIST.length;
+    this.img.src = BIRDS_LIST[index];
+    this.index += 10;
+    this.lastTime = Date.now();
+  }
 
-    databus.bullets.push(bullet)
+  down() {
+    this.y += this.speed;
+  }
+
+  up() {
+    this.speed = -speedMax;
+  }
+
+  // 触碰上下边界
+  overflow() {
+    if (this.y > screenHeight - BIRD_HEIGHT) {
+      databus.gameOver = true;
+    } else if (this.y < 0) {
+      databus.gameOver = true;
+    }
+  }
+
+  update() {
+    this.speed += 0.5; 
+    if (this.speed >= speedMax) {
+      this.speed = speedMax;
+    }
+    this.down()
+    this.overflow()
+    this.fly()
+  }
+
+  render (ctx) {
+    ctx.drawImage(
+      this.img,
+      this.x,
+      this.y,
+      this.width,
+      this.height)
   }
 }

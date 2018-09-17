@@ -21,6 +21,7 @@ export default class BackGround extends Sprite {
   }
 
   update() {
+    
     this.left -= 2
 
     if (this.left <= -screenWidth)
