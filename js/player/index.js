@@ -7,14 +7,19 @@ const screenWidth    = window.innerWidth
 const screenHeight   = window.innerHeight
 
 // 玩家相关常量设置
-const middleBird = {
-  src: 'images/bird_middle.png',
-  width: 37,
-  height: 26
-}
-const BIRDS_LIST = ['images/bird_middle.png', 'images/bird_up.png', 'images/bird_down.png', 'images/bird_middle.png'];
 
-const BIRD_WIDTH = 37;
+let BIRD_UP_IMG = new Image();
+BIRD_UP_IMG.src = 'images/bird_up.png';
+
+let BIRD_MIDDLE_IMG = new Image();
+BIRD_MIDDLE_IMG.src = 'images/bird_middle.png';
+
+let BIRD_DOWN_IMG = new Image();
+BIRD_DOWN_IMG.src = 'images/bird_down.png';
+
+const BIRD_LIST = [BIRD_MIDDLE_IMG, BIRD_UP_IMG, BIRD_MIDDLE_IMG, BIRD_DOWN_IMG]
+
+const BIRD_WIDTH = 37.4;
 const BIRD_HEIGHT = 26;
 
 // 翅膀煽动间隔毫秒数
@@ -25,7 +30,7 @@ const speedMax = 8;
 
 export default class Player extends Sprite {
   constructor() {
-    super(BIRDS_LIST[0], BIRD_WIDTH, BIRD_HEIGHT)
+    super(BIRD_MIDDLE_IMG.src, BIRD_WIDTH, BIRD_HEIGHT)
     this.speed = 0;
     this.index = 0;
     this.lastTime = Date.now();
@@ -47,15 +52,15 @@ export default class Player extends Sprite {
     }).bind(this))
   }
 
-/**
- * 煽动翅膀
- */
+  /**
+   * 煽动翅膀
+   */
   fly() {
     if (Date.now() - this.lastTime < TIME_SPACE) return;
 
-    const index = this.index % BIRDS_LIST.length;
-    this.img.src = BIRDS_LIST[index];
-    this.index += 10;
+    const index = this.index % BIRD_LIST.length;
+    this.img = BIRD_LIST[index];
+    this.index = index + 1;
     this.lastTime = Date.now();
   }
 
