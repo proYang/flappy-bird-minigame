@@ -1,5 +1,5 @@
 import Player from './player/index'
-import Enemy from './npc/enemy'
+import Npc from './npc/index.js'
 import BackGround from './runtime/background/index.js'
 import GameInfo from './runtime/gameinfo'
 import Music from './runtime/music'
@@ -31,6 +31,7 @@ export default class Main {
 
     this.bg = new BackGround(ctx)
     this.player = new Player(ctx)
+    this.npc = new Npc(ctx)
     // this.gameinfo = new GameInfo()
     // this.music = new Music()
 
@@ -45,18 +46,11 @@ export default class Main {
     )
   }
 
-  /**
-   * 随着帧数变化的敌机生成逻辑
-   * 帧数取模定义成生成的频率
-   */
-  enemyGenerate() {
-    if (databus.frame % 30 === 0) {
-      let enemy = databus.pool.getItemByClass('enemy', Enemy)
-      enemy.init(6)
-      databus.enemys.push(enemy)
+  addNpc() {
+    if (databus.frame % 100 === 0) {
+      this.npc.generate()
     }
   }
-
   // 全局碰撞检测
   collisionDetection() {
   }
@@ -84,6 +78,7 @@ export default class Main {
   render() {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     this.bg.render(ctx)
+    this.npc.render(ctx)
     this.player.render(ctx)
   }
 
@@ -91,13 +86,14 @@ export default class Main {
   update() {
     if (databus.gameOver) return
     this.bg.update()
+    this.npc.update()
     this.player.update()
   }
 
   // 实现游戏帧循环
   loop() {
     databus.frame++
-
+    this.addNpc()
     this.update()
     this.render()
 

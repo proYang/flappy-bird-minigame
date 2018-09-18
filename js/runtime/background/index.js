@@ -1,6 +1,7 @@
 import Sprite from '../../base/sprite'
 import Tree from './tree.js'
 import Building from './building.js'
+import Road from './road.js'
 
 
 const screenWidth = window.innerWidth
@@ -19,12 +20,14 @@ export default class BackGround extends Sprite {
     super(BG_IMG_SRC, BG_WIDTH, BG_HEIGHT)
     this.tree = new Tree(ctx);
     this.buidling = new Building(ctx);
+    this.road = new Road(ctx);
     this.render(ctx)
   }
 
   update() {
     this.tree.update();
     this.buidling.update();
+    this.road.update();
   }
 
   /**
@@ -39,5 +42,6 @@ export default class BackGround extends Sprite {
       this.height)
     this.tree.render(ctx);
     this.buidling.render(ctx);
+    this.road.render(ctx);
   }
 }

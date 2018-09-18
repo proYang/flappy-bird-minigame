@@ -21,7 +21,7 @@ const BIRD_LIST = [BIRD_MIDDLE_IMG, BIRD_UP_IMG, BIRD_MIDDLE_IMG, BIRD_DOWN_IMG]
 
 const BIRD_WIDTH = 37.4;
 const BIRD_HEIGHT = 26;
-
+const ROAD_HEIGHT = 53;
 // 翅膀煽动间隔毫秒数
 const TIME_SPACE = 80;
 
@@ -74,7 +74,7 @@ export default class Player extends Sprite {
 
   // 触碰上下边界
   overflow() {
-    if (this.y > screenHeight - BIRD_HEIGHT) {
+    if (this.y > screenHeight - BIRD_HEIGHT - ROAD_HEIGHT) {
       databus.gameOver = true;
     } else if (this.y < 0) {
       databus.gameOver = true;

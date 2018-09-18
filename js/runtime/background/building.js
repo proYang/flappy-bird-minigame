@@ -6,6 +6,7 @@ const screenHeight = window.innerHeight
 const BUILDING_IMG_SRC = 'images/buildings.png'
 const BUILDING_WIDTH = screenWidth
 const BUILDING_HEIGHT = screenWidth / 2.1
+const ROAD_HEIGHT = 53
 
 /**
  * 游戏背景类
@@ -32,17 +33,18 @@ export default class BackGround extends Sprite {
    * 背景图重绘函数
    */
   render(ctx) {
+    const y = screenHeight - ROAD_HEIGHT - this.height;
     ctx.drawImage(
       this.img,
       this.left,
-      BUILDING_HEIGHT,
+      y,
       this.width,
       this.height)
 
     ctx.drawImage(
       this.img,
       this.left + this.width,
-      BUILDING_HEIGHT,
+      y,
       this.width,
       this.height)
   }

@@ -8,6 +8,7 @@ const TREE_WIDTH = screenWidth
 const TREE_HEIGHT = screenWidth / 1.45
 
 const IMG_SPACE = 24
+const ROAD_HEIGHT = 53
 
 /**
  * 游戏背景类
@@ -33,18 +34,18 @@ export default class BackGround extends Sprite {
    * 背景图重绘函数
    */
   render(ctx) {
-
+    const y = screenHeight - ROAD_HEIGHT - this.height;
     ctx.drawImage(
       this.img,
       this.left,
-      TREE_HEIGHT / 2.6,
+      y,
       this.width,
       this.height)
 
     ctx.drawImage(
       this.img,
       this.left + this.width - IMG_SPACE,
-      TREE_HEIGHT / 2.6,
+      y,
       this.width,
       this.height)
   }
