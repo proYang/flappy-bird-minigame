@@ -4,6 +4,7 @@ import BackGround from './runtime/background/index.js'
 import GameInfo from './runtime/gameinfo'
 import Music from './runtime/music'
 import DataBus from './databus'
+import { isCollision } from './util.js'
 
 const screenHeight = window.innerHeight
 
@@ -53,6 +54,36 @@ export default class Main {
   }
   // 全局碰撞检测
   collisionDetection() {
+    this.npc.list.forEach(npc => {
+      // 检测是否碰撞管道所在矩形（包括空白区域）
+      const isCrash = isCollision({
+        left: npc.x,
+        top: 0,
+        width: npc.width,
+        height: screenHeight
+      }, {
+        left: this.player.x,
+        top: this.player.y,
+        width: this.player.width,
+        height: this.player.height
+      })
+      // 排除空白区域
+      const isThrough = isCollision({
+        left: npc.x,
+        top: npc.spaceY + npc.height,
+        width: npc.width,
+        height: npc.spaceHeight
+      }, {
+        left: this.player.x,
+        top: this.player.y,
+        width: this.player.width,
+        height: this.player.height
+      })
+      if (isCrash && !isThrough ) {
+        // 发生碰撞，游戏结束
+        databus.gameOver = true;
+      }
+    })
   }
 
   // 游戏结束后的触摸事件处理逻辑
@@ -88,6 +119,7 @@ export default class Main {
     this.bg.update()
     this.npc.update()
     this.player.update()
+    this.collisionDetection()
   }
 
   // 实现游戏帧循环

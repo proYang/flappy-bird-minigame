@@ -24,7 +24,6 @@ export default class NPC {
   }
 
   update() {
-    console.log(this.list)
     this.list.forEach(item => item.update())
   }
 
