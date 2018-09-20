@@ -1,7 +1,9 @@
 import Sprite   from '../base/sprite'
 import DataBus from '../databus'
+import Music from '../runtime/music.js'
 
 let databus = new DataBus()
+let music = new Music()
 
 const screenWidth    = window.innerWidth
 const screenHeight   = window.innerHeight
@@ -70,6 +72,7 @@ export default class Player extends Sprite {
 
   up() {
     this.speed = -speedMax;
+    music.playSwoosh();
   }
 
   // 触碰上下边界

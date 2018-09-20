@@ -10,30 +10,29 @@ export default class Music {
 
     instance = this
 
-    this.bgmAudio = new Audio()
-    this.bgmAudio.loop = true
-    // this.bgmAudio.src  = 'audio/bgm.mp3'
+    this.pointAudio = new Audio()
+    this.pointAudio.src  = 'audio/point.wav'
 
-    this.shootAudio     = new Audio()
-    // this.shootAudio.src = 'audio/bullet.mp3'
+    this.swooshAudio     = new Audio()
+    this.swooshAudio.src = 'audio/swoosh.wav'
 
-    this.boomAudio     = new Audio()
-    // this.boomAudio.src = 'audio/boom.mp3'
+    this.hitAudio     = new Audio()
+    this.hitAudio.src = 'audio/hit.wav'
 
-    this.playBgm()
   }
 
-  playBgm() {
-    this.bgmAudio.play()
+  playPoint() {
+    this.swooshAudio.currentTime = 0
+    this.pointAudio.play()
   }
 
-  playShoot() {
-    this.shootAudio.currentTime = 0
-    this.shootAudio.play()
+  playSwoosh() {
+    this.swooshAudio.currentTime = 0
+    this.swooshAudio.play()
   }
 
-  playExplosion() {
-    this.boomAudio.currentTime = 0
-    this.boomAudio.play()
+  playHit() {
+    this.hitAudio.currentTime = 0
+    this.hitAudio.play()
   }
 }

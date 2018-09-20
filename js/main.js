@@ -31,7 +31,7 @@ export default class Main {
     this.player = new Player(ctx)
     this.npc = new Npc(ctx)
     this.gameinfo = new GameInfo()
-    // this.music = new Music()
+    this.music = new Music()
 
     this.bindLoop = this.loop.bind(this)
 
@@ -119,11 +119,14 @@ export default class Main {
       if (isCrash && !isThrough ) {
         // 发生碰撞，游戏结束
         databus.gameOver = true;
+        this.music.playHit();
         this.endEvent();
       }
       if (npc.x + npc.width < this.player.x && npc.AddToscore) {
+        // 通过加分
         databus.score ++;
         npc.AddToscore = false;
+        this.music.playPoint();
       }
     })
     // 地图边缘碰撞检测
