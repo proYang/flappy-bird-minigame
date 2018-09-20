@@ -1,4 +1,4 @@
-## quickstart
+## flappy bird 微信小游戏
 
 ## 源码目录介绍
 ```
@@ -11,12 +11,12 @@
 │   ├── symbol.js                          // ES6 Symbol简易兼容
 │   └── weapp-adapter.js                   // 小游戏适配器
 ├── npc
-│   └── enemy.js                           // 敌机类
+│   ├── pipeline.js                        // 管道类
+│   └── index.js                           // 管道集合类
 ├── player
-│   ├── bullet.js                          // 子弹类
-│   └── index.js                           // 玩家类
+│   └── index.js                           // 小鸟类
 ├── runtime
-│   ├── background.js                      // 背景类
+│   ├── background                         // 背景相关
 │   ├── gameinfo.js                        // 用于展示分数和结算界面
 │   └── music.js                           // 全局音效管理器
 ├── databus.js                             // 管控游戏状态
