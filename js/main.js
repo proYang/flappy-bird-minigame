@@ -24,30 +24,67 @@ export default class Main {
 
   restart() {
     databus.reset()
-
-    canvas.removeEventListener(
-      'touchstart',
-      this.touchHandler
-    )
-
+  
+    this.startEvent()
+  
     this.bg = new BackGround(ctx)
     this.player = new Player(ctx)
     this.npc = new Npc(ctx)
-    // this.gameinfo = new GameInfo()
+    this.gameinfo = new GameInfo()
     // this.music = new Music()
 
     this.bindLoop = this.loop.bind(this)
-    // this.hasEventBind = false
 
     // 清除上一局的动画
     window.cancelAnimationFrame(this.aniId);
     this.aniId = window.requestAnimationFrame(
-      this.bindLoop,
-      canvas
+      this.bindLoop)
+  }
+
+  startEvent() {
+    const eventHandle = () => {
+      databus.gameOver = false;
+      databus.hasStart = true;
+      canvas.removeEventListener(
+        'touchend',
+        eventHandle
+      )
+    }
+    canvas.addEventListener(
+      'touchend',
+      eventHandle
     )
   }
 
+
+  // 游戏结束后的触摸事件处理逻辑
+  endEvent() {
+    const endEventHandle = (e) => {
+
+      let x = e.changedTouches[0].clientX
+      let y = e.changedTouches[0].clientY
+      let area = this.gameinfo.btnArea
+
+      if (x >= area.startX
+        && x <= area.endX
+        && y >= area.startY
+        && y <= area.endY) {
+          canvas.removeEventListener(
+            'touchend',
+            endEventHandle
+          )
+          this.restart()
+        }
+    }
+    canvas.addEventListener(
+      'touchend',
+      endEventHandle
+    )
+   
+  }
+
   addNpc() {
+    if (databus.gameOver) return
     if (databus.frame % 100 === 0) {
       this.npc.generate()
     }
@@ -82,24 +119,19 @@ export default class Main {
       if (isCrash && !isThrough ) {
         // 发生碰撞，游戏结束
         databus.gameOver = true;
+        this.endEvent();
+      }
+      if (npc.x + npc.width < this.player.x && npc.AddToscore) {
+        databus.score ++;
+        npc.AddToscore = false;
       }
     })
-  }
-
-  // 游戏结束后的触摸事件处理逻辑
-  touchEventHandler(e) {
-    e.preventDefault()
-
-    let x = e.touches[0].clientX
-    let y = e.touches[0].clientY
-
-    let area = this.gameinfo.btnArea
-
-    if (x >= area.startX
-      && x <= area.endX
-      && y >= area.startY
-      && y <= area.endY)
-      this.restart()
+    // 地图边缘碰撞检测
+    if(this.player.overflow()) {
+      // 发生碰撞，游戏结束
+      databus.gameOver = true;
+      this.endEvent();
+    }
   }
 
   /**
@@ -111,27 +143,31 @@ export default class Main {
     this.bg.render(ctx)
     this.npc.render(ctx)
     this.player.render(ctx)
+    this.gameinfo.renderGameScore(ctx, databus.score)
+    if (databus.gameOver && databus.hasStart) {
+      this.gameinfo.renderGameOver(ctx, databus.score);
+    }
   }
 
   // 游戏逻辑更新主函数
   update() {
+    this.player.update()
+
     if (databus.gameOver) return
     this.bg.update()
     this.npc.update()
-    this.player.update()
     this.collisionDetection()
   }
 
   // 实现游戏帧循环
   loop() {
     databus.frame++
-    this.addNpc()
+
     this.update()
+    this.addNpc()
     this.render()
 
     this.aniId = window.requestAnimationFrame(
-      this.bindLoop,
-      canvas
-    )
+      this.bindLoop)
   }
 }

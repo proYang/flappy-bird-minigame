@@ -42,12 +42,12 @@ export default class Player extends Sprite {
   }
 
   /**
-   * 玩家响应手指的触摸事件
-   * 改变战机的位置
+   * 上升事件
    */
   initEvent() {
     canvas.addEventListener('touchend', ((e) => {
       e.preventDefault()
+      if (databus.gameOver) return
       this.up();
     }).bind(this))
   }
@@ -75,20 +75,21 @@ export default class Player extends Sprite {
   // 触碰上下边界
   overflow() {
     if (this.y > screenHeight - BIRD_HEIGHT - ROAD_HEIGHT) {
-      databus.gameOver = true;
+      return true;
     } else if (this.y < 0) {
-      databus.gameOver = true;
-    }
+      return true;
+    } else return false
   }
 
   update() {
+    this.fly()
+    if(!databus.hasStart) return
     this.speed += 0.5; 
     if (this.speed >= speedMax) {
       this.speed = speedMax;
     }
     this.down()
     this.overflow()
-    this.fly()
   }
 
   render (ctx) {

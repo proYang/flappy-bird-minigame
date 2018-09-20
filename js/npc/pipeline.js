@@ -32,6 +32,8 @@ export default class BackGround extends Sprite {
 
     this.spaceY = rand(this.spaceHeight, screenHeight - this.spaceHeight * 2);
     this.visible = false;
+    // 是否通过，加分锁
+    this.AddToscore = true;
   }
 
   init(x) {
